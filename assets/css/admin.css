@@ -1,0 +1,572 @@
+/**
+ * Admin Styles - Modern Dashboard
+ * 
+ * @package AS24_Motors_Sync
+ * @version 2.0.0
+ */
+
+/* Page Layout */
+.as24-dashboard,
+.as24-settings {
+    max-width: 1400px;
+}
+
+.as24-page-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.as24-page-title .dashicons {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+}
+
+.as24-version {
+    font-size: 14px;
+    color: #666;
+    font-weight: normal;
+    background: #f0f0f1;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+/* Alert Banners */
+.as24-alert {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.as24-alert .dashicons {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.as24-alert-warning {
+    background: #fff3cd;
+    border-left: 4px solid #f0ad4e;
+    color: #856404;
+}
+
+.as24-alert-info {
+    background: #d1ecf1;
+    border-left: 4px solid #0c5460;
+    color: #0c5460;
+}
+
+.as24-alert strong {
+    flex: 1;
+}
+
+.as24-alert-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Stats Grid */
+.as24-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.as24-stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.as24-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.as24-stat-card-warning {
+    border-left: 4px solid #f0ad4e;
+}
+
+.as24-stat-card-error {
+    border-left: 4px solid #dc3232;
+}
+
+.as24-stat-icon {
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+
+.as24-stat-icon .dashicons {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+}
+
+.as24-stat-content {
+    padding: 20px;
+}
+
+.as24-stat-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1e1e1e;
+    margin-bottom: 5px;
+}
+
+.as24-stat-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.as24-stat-sublabel {
+    font-size: 12px;
+    color: #999;
+}
+
+.as24-stat-sublabel .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}
+
+.as24-stat-status-success {
+    color: #46b450;
+}
+
+.as24-stat-status-error {
+    color: #dc3232;
+}
+
+/* Card */
+.as24-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.as24-card h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+/* Actions Grid */
+.as24-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.as24-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: white;
+}
+
+.as24-action-btn .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.as24-action-primary {
+    background: #0073aa;
+    box-shadow: 0 2px 4px rgba(0,115,170,0.3);
+}
+
+.as24-action-primary:hover {
+    background: #005a87;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,115,170,0.4);
+}
+
+.as24-action-secondary {
+    background: #666;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.as24-action-secondary:hover {
+    background: #444;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.as24-action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Progress Bar */
+.as24-progress-section {
+    display: none;
+}
+
+.as24-progress-section.active {
+    display: block;
+}
+
+.as24-progress-bar-container {
+    margin: 15px 0;
+}
+
+.as24-progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #e5e5e5;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+.as24-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0073aa 0%, #00a0d2 100%);
+    border-radius: 15px;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.as24-progress-fill.success {
+    background: linear-gradient(90deg, #46b450 0%, #5cb85c 100%);
+}
+
+.as24-progress-fill.error {
+    background: linear-gradient(90deg, #dc3232 0%, #f56e6e 100%);
+}
+
+.as24-progress-text {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #666;
+}
+
+.as24-progress-percentage {
+    font-weight: bold;
+    color: #0073aa;
+}
+
+.as24-progress-details {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+/* Activity List */
+.as24-activity-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.as24-activity-list li {
+    padding: 10px;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 13px;
+    font-family: monospace;
+    color: #666;
+}
+
+.as24-activity-list li:last-child {
+    border-bottom: none;
+}
+
+.as24-no-activity {
+    color: #999;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Results Grid */
+.as24-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.as24-result-item {
+    text-align: center;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 6px;
+}
+
+.as24-result-value {
+    display: block;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.as24-result-label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.as24-result-added .as24-result-value {
+    color: #46b450;
+}
+
+.as24-result-updated .as24-result-value {
+    color: #0073aa;
+}
+
+.as24-result-removed .as24-result-value {
+    color: #dc3232;
+}
+
+.as24-result-unchanged .as24-result-value {
+    color: #999;
+}
+
+/* Status Indicators */
+.as24-status-active {
+    color: #46b450;
+    font-weight: 600;
+}
+
+.as24-status-active::before {
+    content: "✓ ";
+}
+
+.as24-status-inactive {
+    color: #dc3232;
+    font-weight: 600;
+}
+
+.as24-status-inactive::before {
+    content: "✗ ";
+}
+
+/* Toast Notifications */
+.as24-toast-container {
+    position: fixed;
+    top: 32px;
+    right: 20px;
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.as24-toast {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 300px;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.as24-toast.success {
+    border-left: 4px solid #46b450;
+}
+
+.as24-toast.error {
+    border-left: 4px solid #dc3232;
+}
+
+.as24-toast.info {
+    border-left: 4px solid #0073aa;
+}
+
+.as24-toast .dashicons {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+}
+
+.as24-toast.success .dashicons {
+    color: #46b450;
+}
+
+.as24-toast.error .dashicons {
+    color: #dc3232;
+}
+
+.as24-toast.info .dashicons {
+    color: #0073aa;
+}
+
+.as24-toast-message {
+    flex: 1;
+}
+
+.as24-toast-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    font-size: 18px;
+}
+
+/* Log Viewer */
+.as24-log-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 6px;
+}
+
+.as24-log-controls label {
+    font-weight: 600;
+}
+
+.as24-log-viewer {
+    background: #1e1e1e;
+    border-radius: 6px;
+    padding: 15px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.as24-log-content {
+    color: #d4d4d4;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Settings Tabs */
+.as24-tab-content {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .as24-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .as24-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .as24-results-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .as24-toast-container {
+        right: 10px;
+        left: 10px;
+    }
+    
+    .as24-toast {
+        min-width: auto;
+        max-width: none;
+    }
+}
+
+/* Loading Spinner */
+.as24-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Button States */
+.as24-action-btn.loading {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.as24-action-btn.loading .dashicons {
+    animation: spin 1s linear infinite;
+}
+
+/* Sync Results */
+.as24-sync-results p {
+    margin: 10px 0;
+}
+
+.as24-sync-results strong {
+    min-width: 100px;
+    display: inline-block;
+}
+
+/* Empty Trash Link */
+.button-link.as24-empty-trash {
+    color: #dc3232;
+    text-decoration: underline;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.button-link.as24-empty-trash:hover {
+    color: #a00;
+}
+
