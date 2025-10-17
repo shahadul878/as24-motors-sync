@@ -181,6 +181,28 @@ class AS24_Admin {
     /**
      * Get dashboard statistics
      */
+    /**
+     * Check if image processing is active for a post
+     */
+    public static function check_image_processing($post_id) {
+        $image_queue = get_post_meta($post_id, '_as24_image_queue', true);
+        $queue_status = get_post_meta($post_id, '_as24_image_queue_status', true);
+        
+        if (empty($image_queue) || empty($queue_status)) {
+            return false;
+        }
+        
+        return array(
+            'active' => true,
+            'total' => $queue_status['total'],
+            'processed' => $queue_status['processed'],
+            'failed' => $queue_status['failed']
+        );
+    }
+    
+    /**
+     * Get dashboard statistics
+     */
     public static function get_dashboard_stats() {
         $credentials = as24_motors_sync()->get_api_credentials();
         

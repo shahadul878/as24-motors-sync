@@ -73,6 +73,36 @@ class AS24_Queries {
                                     }
                                     fuelCategory { raw formatted }
                                 }
+                                equipment {
+                                    userInput
+                                    as24 {
+                                        equipmentCategory { raw formatted }
+                                        category { raw formatted }
+                                        id { raw formatted }
+                                    }
+                                    dat {
+                                        oem {
+                                            id
+                                            text
+                                            type
+                                            as24TaxonomyId
+                                        }
+                                    }
+                                }
+                                highlightedEquipment {
+                                    id {
+                                        raw
+                                        formatted
+                                    }
+                                    category {
+                                        raw
+                                        formatted
+                                    }
+                                    equipmentCategory {
+                                        raw
+                                        formatted
+                                    }
+                                }
                                 condition {
                                     firstRegistrationDate { raw formatted }
                                     mileageInKm { raw formatted }
@@ -252,6 +282,20 @@ class AS24_Queries {
                                         type
                                         as24TaxonomyId
                                     }
+                                }
+                            }
+                            highlightedEquipment {
+                                id {
+                                    raw
+                                    formatted
+                                }
+                                category {
+                                    raw
+                                    formatted
+                                }
+                                equipmentCategory {
+                                    raw
+                                    formatted
                                 }
                             }
                             bodyColor { raw formatted }

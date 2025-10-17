@@ -108,7 +108,6 @@ class AS24_Logger {
         $file->seek(PHP_INT_MAX);
         $last_line = $file->key();
         $start_line = max(0, $last_line - $lines);
-        
         $log_entries = array();
         $file->seek($start_line);
         

@@ -57,54 +57,58 @@ class AS24_Sync_Engine {
         while ($page <= $total_pages) {
             AS24_Logger::info(sprintf('Processing listing %d of %d...', $page, $total), 'sync');
             
-            // Get single listing
-            $query = AS24_Queries::get_essential_listings_query($page, 1);
+            // Get batch of listings
+            $query = AS24_Queries::get_essential_listings_query($page, $per_page);
             $data = AS24_Queries::make_request($query);
             
             if (is_wp_error($data)) {
-                AS24_Logger::error('Failed to fetch listing: ' . $data->get_error_message(), 'sync');
+                AS24_Logger::error('Failed to fetch listings: ' . $data->get_error_message(), 'sync');
                 $results['errors']++;
                 $page++;
                 continue;
             }
             
             if (empty($data['data']['search']['listings']['listings'])) {
-                AS24_Logger::error('No listing data returned', 'sync');
+                AS24_Logger::error('No listings data returned', 'sync');
                 $results['errors']++;
                 $page++;
                 continue;
             }
             
-            $listing = $data['data']['search']['listings']['listings'][0];
-            $as24_id = $listing['id'];
+            $listings = $data['data']['search']['listings']['listings'];
+            AS24_Logger::info(sprintf('Processing batch of %d listings...', count($listings)), 'sync');
             
-            // Check if exists
-            $existing_id = AS24_Duplicate_Handler::listing_exists($as24_id);
-            
-            if ($existing_id) {
-                // Update existing
-                $result = AS24_Importer::import_single_listing($listing);
-                if (!is_wp_error($result)) {
-                    if ($result['action'] === 'updated') {
-                        $results['updated']++;
-                        AS24_Logger::info(sprintf('Updated listing %s', $as24_id), 'sync');
+            foreach ($listings as $listing) {
+                $as24_id = $listing['id'];
+                
+                // Check if exists
+                $existing_id = AS24_Duplicate_Handler::listing_exists($as24_id);
+                
+                if ($existing_id) {
+                    // Update existing
+                    $result = AS24_Importer::import_single_listing($listing);
+                    if (!is_wp_error($result)) {
+                        if ($result['action'] === 'updated') {
+                            $results['updated']++;
+                            AS24_Logger::info(sprintf('Updated listing %s', $as24_id), 'sync');
+                        } else {
+                            $results['unchanged']++;
+                            AS24_Logger::info(sprintf('Listing %s unchanged', $as24_id), 'sync');
+                        }
                     } else {
-                        $results['unchanged']++;
-                        AS24_Logger::info(sprintf('Listing %s unchanged', $as24_id), 'sync');
+                        $results['errors']++;
+                        AS24_Logger::error('Update failed: ' . $result->get_error_message(), 'sync');
                     }
                 } else {
-                    $results['errors']++;
-                    AS24_Logger::error('Update failed: ' . $result->get_error_message(), 'sync');
-                }
-            } else {
-                // Create new
-                $result = AS24_Importer::import_single_listing($listing);
-                if (!is_wp_error($result) && $result['action'] === 'imported') {
-                    $results['added']++;
-                    AS24_Logger::info(sprintf('Imported new listing %s', $as24_id), 'sync');
-                } else {
-                    $results['errors']++;
-                    AS24_Logger::error('Import failed: ' . $result->get_error_message(), 'sync');
+                    // Create new
+                    $result = AS24_Importer::import_single_listing($listing);
+                    if (!is_wp_error($result) && $result['action'] === 'imported') {
+                        $results['added']++;
+                        AS24_Logger::info(sprintf('Imported new listing %s', $as24_id), 'sync');
+                    } else {
+                        $results['errors']++;
+                        AS24_Logger::error('Import failed: ' . $result->get_error_message(), 'sync');
+                    }
                 }
             }
             

@@ -221,7 +221,7 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'connect
                 <h3><?php _e('Log Files', 'as24-motors-sync'); ?></h3>
                 
                 <div class="as24-log-controls">
-                    <label for="log-type"><?php _e('Log Type:', 'as24-motors-sync'); ?></label>
+                    <label for="as24-log-type"><?php _e('Log Type:', 'as24-motors-sync'); ?></label>
                     <select id="as24-log-type">
                         <option value="general"><?php _e('General', 'as24-motors-sync'); ?></option>
                         <option value="import"><?php _e('Import', 'as24-motors-sync'); ?></option>

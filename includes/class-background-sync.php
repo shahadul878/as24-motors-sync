@@ -14,6 +14,36 @@ if (!defined('ABSPATH')) {
 class AS24_Background_Sync {
     
     /**
+     * Stop background sync process
+     */
+    public static function stop_sync() {
+        $status = get_option('as24_sync_status');
+        
+        if (!$status || $status['status'] !== 'running') {
+            return array(
+                'success' => false,
+                'message' => 'No active sync process to stop'
+            );
+        }
+        
+        // Clear scheduled event
+        wp_clear_scheduled_hook('as24_process_sync_batch');
+        
+        // Update status
+        $status['status'] = 'stopped';
+        $status['duration'] = time() - $status['start_time'];
+        update_option('as24_sync_status', $status);
+        
+        AS24_Logger::info(sprintf('Sync stopped manually at %d of %d listings', 
+            $status['current'], $status['total']), 'sync');
+        
+        return array(
+            'success' => true,
+            'message' => 'Sync process stopped'
+        );
+    }
+    
+    /**
      * Start background sync process
      */
     public static function start_sync() {

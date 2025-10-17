@@ -16,7 +16,13 @@ class AS24_Image_Handler {
      * Import images for a listing
      */
     public static function import_images($post_id, $images) {
+        if (empty($post_id) || !is_numeric($post_id)) {
+            AS24_Logger::error('Invalid post ID provided for image import', 'import');
+            return;
+        }
+
         if (empty($images) || !is_array($images)) {
+            AS24_Logger::debug(sprintf('No images to import for post %d', $post_id), 'import');
             return;
         }
         
@@ -33,6 +39,7 @@ class AS24_Image_Handler {
         }
         
         if (empty($image_queue)) {
+            AS24_Logger::debug(sprintf('No valid image URLs found for post %d', $post_id), 'import');
             return;
         }
         
@@ -46,8 +53,20 @@ class AS24_Image_Handler {
         ));
         
         // Schedule background processing
-        if (!wp_next_scheduled('as24_process_image_queue', array($post_id))) {
-            wp_schedule_single_event(time(), 'as24_process_image_queue', array($post_id));
+        $args = array($post_id);
+        if (!wp_next_scheduled('as24_process_image_queue', $args)) {
+            $scheduled = wp_schedule_single_event(time(), 'as24_process_image_queue', $args);
+            AS24_Logger::debug(sprintf(
+                'Scheduling image processing for post %d: %s (Args: %s)', 
+                $post_id, 
+                $scheduled ? 'Success' : 'Failed',
+                json_encode($args)
+            ), 'import');
+        } else {
+            AS24_Logger::debug(sprintf(
+                'Image processing already scheduled for post %d',
+                $post_id
+            ), 'import');
         }
         
         return array(
@@ -57,11 +76,48 @@ class AS24_Image_Handler {
     }
     
     /**
+     * Process all pending image queues
+     */
+    public static function process_all_queues() {
+        global $wpdb;
+        
+        // Get all posts with pending image queues
+        $posts_with_queues = $wpdb->get_col(
+            "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_as24_image_queue'"
+        );
+        
+        if (empty($posts_with_queues)) {
+            AS24_Logger::debug('No pending image queues found', 'import');
+            return;
+        }
+        
+        foreach ($posts_with_queues as $post_id) {
+            if (!wp_next_scheduled('as24_process_image_queue', array($post_id))) {
+                wp_schedule_single_event(time(), 'as24_process_image_queue', array($post_id));
+                AS24_Logger::debug(sprintf('Scheduled image processing for post %d', $post_id), 'import');
+            }
+        }
+    }
+
+    /**
      * Process image queue in background
      */
-    public static function process_image_queue($post_id) {
+    public static function process_image_queue($post_id = null) {
+        if (!$post_id) {
+            AS24_Logger::error('No post ID provided for image queue processing', 'import');
+            return;
+        }
+        AS24_Logger::debug(sprintf('Starting image queue processing for post %d', $post_id), 'import');
+        
         $image_queue = get_post_meta($post_id, '_as24_image_queue', true);
         $queue_status = get_post_meta($post_id, '_as24_image_queue_status', true);
+        
+        AS24_Logger::debug(sprintf(
+            'Queue status for post %d: Queue exists: %s, Status exists: %s', 
+            $post_id,
+            !empty($image_queue) ? 'Yes' : 'No',
+            !empty($queue_status) ? 'Yes' : 'No'
+        ), 'import');
         
         if (empty($image_queue) || empty($queue_status)) {
             return;
@@ -124,26 +180,11 @@ class AS24_Image_Handler {
             delete_post_meta($post_id, '_as24_image_queue_status');
         }
         
-        // Store all image IDs as gallery in multiple formats for maximum compatibility
-        if (!empty($image_ids)) {
-            // Store as comma-separated string (legacy format)
-            update_post_meta($post_id, '_gallery_images', implode(',', $image_ids));
-            
-            // Store as serialized array (WordPress native format)
-            update_post_meta($post_id, 'gallery', $image_ids);
-            
-            // Store in ACF format if ACF is active
-            if (function_exists('update_field')) {
-                update_field('gallery_images', $image_ids, $post_id);
-            }
-            
-            // Update post content to include gallery shortcode
-           
-        }
-        
-        AS24_Logger::debug(sprintf('Imported %d images for listing %d', count($image_ids), $post_id), 'import');
-        
-        return $image_ids;
+        AS24_Logger::debug(sprintf('Processed image %d of %d for listing %d', 
+            $queue_status['processed'], 
+            $queue_status['total'], 
+            $post_id
+        ), 'import');
     }
     
     /**

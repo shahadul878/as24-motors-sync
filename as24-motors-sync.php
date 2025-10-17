@@ -118,8 +118,14 @@ class AS24_Motors_Sync {
             AS24_Ajax_Handler::init_hooks();
         }
         
+        // Add custom cron intervals
+        add_filter('cron_schedules', array($this, 'add_cron_intervals'));
+        
         // Background sync hook
         add_action('as24_process_sync_batch', array('AS24_Background_Sync', 'process_batch'));
+        
+        // Background image processing hook
+        add_action('as24_process_image_queue', array('AS24_Image_Handler', 'process_image_queue'), 10, 1);
         
         // Cron hooks
         AS24_Cron_Manager::init_hooks();
@@ -304,6 +310,23 @@ class AS24_Motors_Sync {
      * Get API credentials
      * 
      * @return array|false Array with username and password or false if not set
+     */
+    /**
+     * Add custom cron intervals
+     * 
+     * @param array $schedules Existing cron schedules
+     * @return array Modified cron schedules
+     */
+    public function add_cron_intervals($schedules) {
+        $schedules['five_minutes'] = array(
+            'interval' => 300, // 5 minutes in seconds
+            'display' => __('Every 5 minutes', 'as24-motors-sync')
+        );
+        return $schedules;
+    }
+    
+    /**
+     * Get API credentials
      */
     public function get_api_credentials() {
         $username = $this->get_setting('api_username');

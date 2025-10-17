@@ -227,6 +227,31 @@
     transform: none !important;
 }
 
+/* Stop Button */
+.as24-stop-sync {
+    margin-top: 10px;
+    background: #dc3232 !important;
+    color: white !important;
+    border: none !important;
+    padding: 5px 15px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    transition: all 0.2s ease !important;
+}
+
+.as24-stop-sync:hover {
+    background: #a00 !important;
+}
+
+.as24-stop-sync .dashicons {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+}
+
 /* Progress Bar */
 .as24-progress-section {
     display: none;

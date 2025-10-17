@@ -9,9 +9,68 @@
     'use strict';
     
     const AS24 = {
+        // Track image processing polling
+        imageProcessingInterval: null,
+        
+        checkImageProcessing: function(postId) {
+            $.ajax({
+                url: AS24_Admin.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'as24_check_image_processing',
+                    nonce: AS24_Admin.nonce,
+                    post_id: postId
+                },
+                success: (response) => {
+                    if (response.success) {
+                        const status = response.data;
+                        const percent = Math.round((status.processed / status.total) * 100);
+                        
+                        // Update progress bar if exists
+                        if ($('.as24-image-progress').length === 0) {
+                            $('.postbox-header').after(`
+                                <div class="as24-image-progress" style="margin: 10px; padding: 10px; background: #f0f0f1; border-radius: 4px;">
+                                    <div class="as24-image-progress-text">
+                                        Processing images: ${status.processed} of ${status.total} (${percent}%)
+                                        ${status.failed > 0 ? `, Failed: ${status.failed}` : ''}
+                                    </div>
+                                    <div class="as24-image-progress-bar" style="margin-top: 5px; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
+                                        <div class="as24-image-progress-fill" style="width: ${percent}%; height: 100%; background: #2271b1; transition: width 0.3s ease;"></div>
+                                    </div>
+                                </div>
+                            `);
+                        } else {
+                            $('.as24-image-progress-text').text(
+                                `Processing images: ${status.processed} of ${status.total} (${percent}%)` +
+                                (status.failed > 0 ? `, Failed: ${status.failed}` : '')
+                            );
+                            $('.as24-image-progress-fill').css('width', percent + '%');
+                        }
+                        
+                        // Continue polling
+                        setTimeout(() => this.checkImageProcessing(postId), 2000);
+                    } else {
+                        // Processing complete or no active processing
+                        if (this.imageProcessingInterval) {
+                            clearInterval(this.imageProcessingInterval);
+                            this.imageProcessingInterval = null;
+                        }
+                        $('.as24-image-progress').fadeOut(() => {
+                            $('.as24-image-progress').remove();
+                        });
+                    }
+                }
+            });
+        },
         
         init: function() {
             console.log('AS24: Initializing plugin JavaScript');
+            
+            // Check for active image processing on listing edit page
+            const postId = $('#post_ID').val();
+            if (postId) {
+                this.checkImageProcessing(postId);
+            }
             
             // Check if AS24_Admin is defined
             if (typeof AS24_Admin === 'undefined') {
@@ -405,12 +464,51 @@
             });
         },
         
+        stopSync: function() {
+            if (!confirm('Are you sure you want to stop the sync process?')) {
+                return;
+            }
+            
+            $.ajax({
+                url: AS24_Admin.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'as24_stop_sync',
+                    nonce: AS24_Admin.nonce
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.showToast(response.data.message, 'success');
+                        this.hideProgress();
+                        this.setButtonLoading($('.as24-sync-now'), false);
+                        this.refreshStats();
+                    } else {
+                        this.showToast(response.data.message, 'error');
+                    }
+                },
+                error: (xhr, status, error) => {
+                    this.showToast('Failed to stop sync: ' + error, 'error');
+                }
+            });
+        },
+        
         showProgress: function(message) {
             const $section = $('.as24-progress-section');
             $section.addClass('active').show();
             $('.as24-progress-status').text(message);
             $('.as24-progress-fill').css('width', '0%');
             $('.as24-progress-percentage').text('0%');
+            
+            // Add stop button if not exists
+            if (!$('.as24-stop-sync').length) {
+                const $stopBtn = $(`
+                    <button type="button" class="button button-secondary as24-stop-sync">
+                        <span class="dashicons dashicons-no-alt"></span> Stop Sync
+                    </button>
+                `);
+                $stopBtn.on('click', () => this.stopSync());
+                $section.append($stopBtn);
+            }
         },
         
         updateProgress: function(percentage, message) {
@@ -443,6 +541,7 @@
         
         hideProgress: function() {
             $('.as24-progress-section').fadeOut();
+            $('.as24-stop-sync').remove();
         },
         
         showToast: function(message, type = 'info') {

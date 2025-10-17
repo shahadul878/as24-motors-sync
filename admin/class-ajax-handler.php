@@ -18,6 +18,8 @@ class AS24_Ajax_Handler {
     public static function init_hooks() {
         // Unified Sync & Import operation
         add_action('wp_ajax_as24_sync_now', array(__CLASS__, 'ajax_sync_now'));
+        add_action('wp_ajax_as24_check_image_processing', array(__CLASS__, 'ajax_check_image_processing'));
+        add_action('wp_ajax_as24_stop_sync', array(__CLASS__, 'ajax_stop_sync'));
         
         // Duplicate operations
         add_action('wp_ajax_as24_scan_duplicates', array(__CLASS__, 'ajax_scan_duplicates'));
@@ -307,6 +309,50 @@ class AS24_Ajax_Handler {
         $result = AS24_Cleanup::remove_non_as24_listings();
         
         wp_send_json_success($result);
+    }
+    
+    /**
+     * Test API connection
+     */
+    /**
+     * Stop background sync process
+     */
+    public static function ajax_stop_sync() {
+        self::verify_nonce();
+        
+        $result = AS24_Background_Sync::stop_sync();
+        
+        if ($result['success']) {
+            wp_send_json_success(array(
+                'message' => $result['message'],
+                'status' => AS24_Background_Sync::get_status()
+            ));
+        } else {
+            wp_send_json_error(array('message' => $result['message']));
+        }
+    }
+    
+    /**
+     * Test API connection
+     */
+    /**
+     * Check image processing status
+     */
+    public static function ajax_check_image_processing() {
+        self::verify_nonce();
+        
+        $post_id = intval($_POST['post_id'] ?? 0);
+        if (!$post_id) {
+            wp_send_json_error(array('message' => 'Invalid post ID'));
+            return;
+        }
+        
+        $status = AS24_Admin::check_image_processing($post_id);
+        if ($status) {
+            wp_send_json_success($status);
+        } else {
+            wp_send_json_error(array('message' => 'No active image processing'));
+        }
     }
     
     /**

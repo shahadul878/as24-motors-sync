@@ -19,6 +19,7 @@ class AS24_Cron_Manager {
         add_action('as24_motors_sync_import', array(__CLASS__, 'run_import'));
         add_action('as24_motors_sync_sync', array(__CLASS__, 'run_sync'));
         add_action('as24_motors_sync_cleanup', array(__CLASS__, 'run_cleanup'));
+        add_action('as24_process_pending_images', array(__CLASS__, 'run_image_processing'));
     }
     
     /**
@@ -28,6 +29,27 @@ class AS24_Cron_Manager {
         self::schedule_import();
         self::schedule_sync();
         self::schedule_cleanup();
+        self::schedule_image_processing();
+    }
+    
+    /**
+     * Schedule image processing job (every 5 minutes)
+     */
+    public static function schedule_image_processing() {
+        wp_clear_scheduled_hook('as24_process_pending_images');
+        
+        if (!wp_next_scheduled('as24_process_pending_images')) {
+            wp_schedule_event(time(), 'five_minutes', 'as24_process_pending_images');
+            AS24_Logger::info('Image processing job scheduled: every 5 minutes', 'general');
+        }
+    }
+    
+    /**
+     * Run image processing job
+     */
+    public static function run_image_processing() {
+        AS24_Logger::info('Auto image processing triggered by cron', 'import');
+        AS24_Image_Handler::process_all_queues();
     }
     
     /**
@@ -37,6 +59,8 @@ class AS24_Cron_Manager {
         wp_clear_scheduled_hook('as24_motors_sync_import');
         wp_clear_scheduled_hook('as24_motors_sync_sync');
         wp_clear_scheduled_hook('as24_motors_sync_cleanup');
+        wp_clear_scheduled_hook('as24_process_image_queue');
+        wp_clear_scheduled_hook('as24_process_pending_images');
         
         AS24_Logger::info('All cron jobs cleared', 'general');
     }
